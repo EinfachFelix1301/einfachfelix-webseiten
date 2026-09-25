@@ -42,3 +42,6 @@ Links auf `bloodline.cc` in HTML/JS (z. B. die API-URL des Regelwerks) per Suche
 - Echte Configs sind gitignored: `**/config.php`, `settings.json`, `keys.json`, `whitelist.json`, `.dev.vars`, Uploads und Transcripts.
 - Worker-Secrets gehören in `wrangler secret put …`, nie in `wrangler.toml`.
 - Der erste Admin der Worker wird nur angelegt, wenn das Secret `BOOTSTRAP_ADMIN_PASSWORD` gesetzt ist.
+- Login-Bremse der Worker: nach 10 Fehlversuchen pro IP in 10 Minuten antwortet `/api/login` mit `429` (Tabelle `login_attempts`, kommt mit den Migrationen).
+- Fremd-HTML aus Änderungsvorschlägen wird serverseitig (HTMLRewriter) und im Browser (DOMPurify) bereinigt.
+- Transcripts: `api/get.php` nur mit Discord-Login (Admins alles, sonst nur eigene Tickets).

@@ -40,7 +40,7 @@ npm run db:create            # D1-Datenbank anlegen
 npm run db:migrate
 npx wrangler secret put BOOTSTRAP_ADMIN_PASSWORD    # Passwort für den ersten Admin "admin"
 npx wrangler secret put DISCORD_CLIENT_SECRET       # nur mit Discord-Login
-npx wrangler secret put BOT_SECRET                  # nur wenn ein Bot über /api/bot/login Sessions holen soll
+npx wrangler secret put BOT_SECRET                  # nur für Bot-Login: /api/bot/login liefert Einmal-Links (5 min gültig)
 
 npm run deploy
 ```

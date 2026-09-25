@@ -73,7 +73,7 @@ export function readSessionToken(req) {
 
 export async function getUser(env, req) {
   const token = readSessionToken(req);
-  if (!token) return null;
+  if (!token || token.startsWith(LOGIN_CODE_PREFIX)) return null;
   const row = await env.DB.prepare(
     `SELECT u.id, u.username, u.role, u.display_name AS displayName, s.expires_at
      FROM sessions s JOIN users u ON u.id = s.user_id
@@ -87,6 +87,34 @@ export async function getUser(env, req) {
     return null;
   }
   return { id: row.id, username: row.username, role: row.role, displayName: row.displayName || null };
+}
+
+// Einmal-Login-Codes für Magic-Links (Bot-Login): kurzlebig, nur einmal einlösbar,
+// nie als Session-Cookie gültig. Liegen mit Präfix in der sessions-Tabelle.
+const LOGIN_CODE_PREFIX = "login_";
+const LOGIN_CODE_TTL_MS = 5 * 60_000;
+
+export async function createLoginCode(env, userId) {
+  const code = LOGIN_CODE_PREFIX + newSessionToken();
+  const now = Date.now();
+  await env.DB.prepare(
+    `INSERT INTO sessions (token, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)`
+  )
+    .bind(code, userId, now + LOGIN_CODE_TTL_MS, now)
+    .run();
+  return code;
+}
+
+// Löst einen Code ein (löscht ihn) und gibt ein neues Session-Token zurück, sonst null.
+export async function redeemLoginCode(env, code) {
+  if (!code || !code.startsWith(LOGIN_CODE_PREFIX)) return null;
+  const row = await env.DB.prepare(
+    `SELECT user_id FROM sessions WHERE token = ? AND expires_at > ?`
+  )
+    .bind(code, Date.now())
+    .first();
+  await env.DB.prepare(`DELETE FROM sessions WHERE token = ?`).bind(code).run();
+  return row ? createSession(env, row.user_id) : null;
 }
 
 export async function createSession(env, userId) {

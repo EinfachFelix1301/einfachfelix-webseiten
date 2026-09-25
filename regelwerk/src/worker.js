@@ -2,6 +2,8 @@ import {
   hashPassword,
   verifyPassword,
   createSession,
+  createLoginCode,
+  redeemLoginCode,
   sessionCookie,
   clearCookie,
   getUser,
@@ -83,6 +85,26 @@ async function sanitizeHtml(html) {
     })
     .transform(new Response(src, { headers: { "content-type": "text/html; charset=utf-8" } }));
   return res.text();
+}
+
+// Login-Bremse: max. LOGIN_MAX_FAILS Fehlversuche pro IP in LOGIN_WINDOW_MS.
+// Fehlt die Tabelle (Migration nicht ausgeführt), wird nichts blockiert.
+const LOGIN_MAX_FAILS = 10;
+const LOGIN_WINDOW_MS = 10 * 60_000;
+
+async function tooManyFailedLogins(env, ip) {
+  const row = await env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM login_attempts WHERE ip = ? AND created_at > ?`
+  ).bind(ip, Date.now() - LOGIN_WINDOW_MS).first().catch(() => null);
+  return !!row && row.n >= LOGIN_MAX_FAILS;
+}
+
+async function recordFailedLogin(env, ip) {
+  const now = Date.now();
+  await env.DB.batch([
+    env.DB.prepare(`INSERT INTO login_attempts (ip, created_at) VALUES (?, ?)`).bind(ip, now),
+    env.DB.prepare(`DELETE FROM login_attempts WHERE created_at < ?`).bind(now - 86400_000),
+  ]).catch(() => {});
 }
 
 async function audit(env, actor, action, target, details) {
@@ -208,13 +230,19 @@ async function handleApi(req, env, url, user) {
     } else {
       await env.DB.prepare(`UPDATE users SET role = 'admin', display_name = ? WHERE id = ?`).bind(display, u.id).run();
     }
-    const token = await createSession(env, u.id);
+    const code = await createLoginCode(env, u.id);
     await audit(env, handle, "bot.login", display, null);
-    return json({ ok: true, token, loginUrl: `https://${env.ADMIN_HOST}/auth?token=${token}` });
+    // Einmal-Link (5 min gültig) statt Session-Token in der URL
+    return json({ ok: true, loginUrl: `https://${env.ADMIN_HOST}/auth?token=${code}`, expiresIn: 300 });
   }
 
   // Auth: login (admin host only)
   if (p === "/api/login" && m === "POST") {
+    // Brute-Force-Bremse: fehlgeschlagene Logins pro IP zählen (Tabelle login_attempts)
+    const ip = req.headers.get("cf-connecting-ip") || "unknown";
+    if (await tooManyFailedLogins(env, ip)) {
+      return err(429, "Zu viele fehlgeschlagene Logins. Bitte 10 Minuten warten.");
+    }
     const body = await req.json().catch(() => ({}));
     const username = String(body.username || "").trim().toLowerCase();
     const password = String(body.password || "");
@@ -224,9 +252,12 @@ async function handleApi(req, env, url, user) {
     )
       .bind(username)
       .first();
-    if (!row) return err(401, "Invalid credentials");
-    const ok = await verifyPassword(password, row.password_hash, row.password_salt);
-    if (!ok) return err(401, "Invalid credentials");
+    const ok = !!row && (await verifyPassword(password, row.password_hash, row.password_salt));
+    if (!ok) {
+      await recordFailedLogin(env, ip);
+      return err(401, "Invalid credentials");
+    }
+    await env.DB.prepare(`DELETE FROM login_attempts WHERE ip = ?`).bind(ip).run().catch(() => {});
     const token = await createSession(env, row.id);
     await env.DB.prepare(`UPDATE users SET last_login = ? WHERE id = ?`)
       .bind(Date.now(), row.id)
@@ -676,17 +707,13 @@ export default {
 
     // Bot-Magic-Login: setzt Session-Cookie aus gültigem Token und leitet zur Startseite
     if (url.pathname === "/auth") {
-      const token = url.searchParams.get("token") || "";
+      const code = url.searchParams.get("token") || "";
+      const token = await redeemLoginCode(env, code);
       if (token) {
-        const sess = await env.DB.prepare(
-          `SELECT token FROM sessions WHERE token = ? AND expires_at > ?`
-        ).bind(token, Date.now()).first();
-        if (sess) {
-          return new Response(null, {
-            status: 302,
-            headers: { location: "/", "set-cookie": sessionCookie(token) },
-          });
-        }
+        return new Response(null, {
+          status: 302,
+          headers: { location: "/", "set-cookie": sessionCookie(token), "referrer-policy": "no-referrer" },
+        });
       }
       return new Response(null, { status: 302, headers: { location: "/" } });
     }
