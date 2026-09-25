@@ -1,0 +1,82 @@
+# Bloodline Gallery
+Options -Indexes
+DirectoryIndex index.php
+
+# Authorization Header an PHP weiterleiten
+RewriteEngine On
+RewriteRule ^lb_phone(?:/(.*))?$ phone/$1 [R=301,L]
+RewriteCond %{HTTP:Authorization} .+
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+# Sensible Dateien blockieren
+<FilesMatch "(config\.php|config\.example\.php|auth\.php|keys\.json|whitelist\.json|debug\.log|settings\.json|antraege\.json|dc_names\.json|\.user\.ini)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Explizite MIME-Types für Videos (damit Discord korrekt erkennt)
+<IfModule mod_mime.c>
+    AddType video/mp4 .mp4
+    AddType video/webm .webm
+    AddType video/quicktime .mov
+    AddType audio/mpeg .mp3
+    AddType audio/ogg .ogg
+    AddType audio/wav .wav
+</IfModule>
+
+# CORS + Range-Support für Bilder (ingame Nutzung, kein Cache)
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|bmp|pdf)$">
+    <IfModule mod_headers.c>
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, OPTIONS"
+        Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept"
+        Header set Cache-Control "no-cache, must-revalidate"
+        Header set Pragma "no-cache"
+    </IfModule>
+</FilesMatch>
+
+# SVG/XML: nie als aktives Dokument ausführen (Stored-XSS-Schutz beim direkten Öffnen).
+# <img src="…svg"> funktioniert weiterhin.
+<FilesMatch "\.(svg|xml)$">
+    <IfModule mod_headers.c>
+        Header set Content-Security-Policy "sandbox"
+        Header set X-Content-Type-Options "nosniff"
+    </IfModule>
+</FilesMatch>
+
+# Video/Audio: MÜSSEN cachebar sein damit Discord embeddet + Range Requests erlauben
+# + ÖFFENTLICHER Zugriff für alle (auch nicht eingeloggte User)
+<FilesMatch "\.(mp4|webm|mov|mp3|wav|ogg)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Allow from all
+    </IfModule>
+    <IfModule mod_headers.c>
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, HEAD, OPTIONS"
+        Header set Access-Control-Allow-Headers "Origin, Range, Accept"
+        Header set Accept-Ranges "bytes"
+        Header set Cache-Control "public, max-age=31536000"
+        Header unset Pragma
+    </IfModule>
+</FilesMatch>
+
+# view.php + Bilder/PDFs: ebenfalls öffentlich
+<FilesMatch "^view\.php$|\.(jpg|jpeg|png|gif|webp|svg|bmp|pdf)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Allow from all
+    </IfModule>
+</FilesMatch>

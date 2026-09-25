@@ -1,0 +1,40 @@
+name = "bloodline-doj"
+main = "src/worker.js"
+compatibility_date = "2025-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Static assets (HTML/CSS/JS/images)
+[assets]
+directory = "./public"
+binding = "ASSETS"
+not_found_handling = "none"
+html_handling = "none"
+run_worker_first = true
+
+# D1 database (laws, users, sessions, requests)
+[[d1_databases]]
+binding = "DB"
+database_name = "bloodline-doj"
+database_id = "REPLACE_WITH_D1_ID"
+migrations_dir = "migrations"
+
+# Custom domain for gesetz (wrangler auto-creates DNS)
+[[routes]]
+pattern = "gesetz.example.com"
+custom_domain = true
+
+# doj keeps existing CNAME → use route binding
+[[routes]]
+pattern = "doj.example.com/*"
+zone_name = "example.com"
+
+[vars]
+PUBLIC_HOST = "gesetz.example.com"
+ADMIN_HOST = "doj.example.com"
+# Discord OAuth (Button-Login). Secret = wrangler secret DISCORD_CLIENT_SECRET.
+# Gleiche Discord-App wie Regelwerk (Redirect läuft über transcript/callback.php).
+DISCORD_GUILD_ID = "DEINE_ID"
+# Alle Rollen mit DOJ-Zugang (Komma-getrennt, EINE reicht).
+DISCORD_ROLE_IDS = "DEINE_ID,DEINE_ID,DEINE_ID"
+DISCORD_CLIENT_ID = "DEINE_ID"
+DISCORD_REDIRECT_URI = "https://example.com/transcript/callback.php"

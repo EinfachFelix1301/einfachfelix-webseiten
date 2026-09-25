@@ -1,0 +1,29 @@
+# === Secrets / Runtime — NIE committen ===
+# Echte Config mit Secrets (nur *.example.php wird versioniert)
+**/includes/config.php
+img/config.php
+bloodline.cc/img/config.php
+**/whitelist.json
+**/keys.json
+**/settings.json
+**/dc_names.json
+**/antraege.json
+**/*.log
+
+# Runtime-Caches
+**/loadingscreen_cache.json
+
+# Hochgeladene Medien / Transcripts (leben nur auf dem Server)
+bloodline.cc/img/sd_phone/
+bloodline.cc/transcript/transcripts/
+
+# Node / Wrangler (Cloudflare Worker: regelwerk, doj)
+**/node_modules/
+**/.wrangler/
+**/dist/
+.dev.vars
+**/.dev.vars
+
+# OS / Editor
+Thumbs.db
+.DS_Store

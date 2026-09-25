@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloodline · Changelog</title>
+    <link rel="icon" type="image/png" href="https://bloodline.cc/img/bloodline/bl_transparent.png">
+    <link rel="apple-touch-icon" href="https://bloodline.cc/img/bloodline/bl_transparent.png">
+    <meta name="description" content="Changelog des Bloodline Discord Bots — alle Updates und Verbesserungen.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #D32F2F;
+            --primary-hover: #FF3B3B;
+            --primary-light: #FF5252;
+            --dark-bg: #0a0a0a;
+            --card-bg: #121212;
+            --text: #f0f0f0;
+            --text-light: #ffffff;
+            --text-dark: #9e9e9e;
+            --text-darker: #666666;
+            --border: rgba(211,47,47,0.15);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 15% 0%, rgba(211,47,47,0.10), transparent 40%),
+                radial-gradient(circle at 85% 100%, rgba(211,47,47,0.06), transparent 40%);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #D32F2F, #FF3B3B); border-radius: 10px; }
+
+        .header {
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+        }
+        .header-inner {
+            max-width: 880px; margin: 0 auto;
+            padding: 22px 24px;
+            display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+        }
+        .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+        .brand img { width: 46px; height: 46px; object-fit: contain; }
+        .brand-title {
+            font-family: 'Orbitron', sans-serif; font-weight: 800;
+            font-size: 1.25rem; color: var(--text-light); letter-spacing: 1px;
+        }
+        .brand-sub { display: block; font-size: 0.72rem; color: var(--text-dark); letter-spacing: 2px; text-transform: uppercase; }
+        .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .nav-links a {
+            color: var(--text-dark); text-decoration: none; font-weight: 600; font-size: 0.88rem;
+            padding: 9px 16px; border-radius: 8px; border: 1px solid transparent; transition: all .2s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .nav-links a:hover { color: var(--text-light); border-color: var(--border); background: rgba(211,47,47,0.08); }
+
+        .hero { max-width: 880px; margin: 0 auto; padding: 54px 24px 24px; }
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif; font-weight: 900;
+            font-size: clamp(2rem, 5vw, 3rem); color: var(--text-light); line-height: 1.1;
+        }
+        .hero h1 span { color: var(--primary); }
+        .hero p { color: var(--text-dark); margin-top: 14px; font-size: 1.02rem; max-width: 600px; }
+
+        .timeline { max-width: 860px; margin: 0 auto; padding: 30px 24px 90px; position: relative; }
+        /* vertikale Timeline-Schiene */
+        .timeline::before {
+            content: ""; position: absolute; left: 39px; top: 46px; bottom: 96px;
+            width: 2px; background: linear-gradient(180deg, var(--primary) 0%, rgba(211,47,47,0.25) 60%, transparent 100%);
+        }
+        @media (max-width: 640px) { .timeline::before { display: none; } }
+
+        .release {
+            position: relative;
+            margin-left: 60px;
+            background: linear-gradient(155deg, #1a1a1a 0%, #121212 55%, #0e0e0e 100%);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 24px 30px 26px;
+            margin-bottom: 26px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.42);
+            transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+            overflow: hidden;
+        }
+        @media (max-width: 640px) { .release { margin-left: 0; } }
+        .release:hover {
+            transform: translateY(-3px);
+            border-color: rgba(211,47,47,0.38);
+            box-shadow: 0 18px 42px rgba(0,0,0,0.55);
+        }
+        /* Knoten auf der Schiene */
+        .release::before {
+            content: ""; position: absolute; left: -44px; top: 28px;
+            width: 15px; height: 15px; border-radius: 50%;
+            background: var(--dark-bg); border: 3px solid var(--primary);
+            box-shadow: 0 0 0 4px rgba(211,47,47,0.12);
+        }
+        @media (max-width: 640px) { .release::before { display: none; } }
+        /* Akzentlinie oben */
+        .release::after {
+            content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0; transition: opacity .2s ease;
+        }
+        .release:hover::after { opacity: .8; }
+
+        .release.latest {
+            border-color: rgba(211,47,47,0.42);
+            box-shadow: 0 18px 46px rgba(211,47,47,0.16), 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .release.latest::after { opacity: .9; }
+        .release.latest::before {
+            background: var(--primary);
+            box-shadow: 0 0 0 5px rgba(211,47,47,0.18), 0 0 16px rgba(211,47,47,0.65);
+        }
+
+        .release-head {
+            display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+            padding-bottom: 16px; margin-bottom: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .ver-badge {
+            font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 1rem;
+            color: #fff; background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            padding: 7px 17px; border-radius: 9px; letter-spacing: 1.5px;
+            box-shadow: 0 4px 14px rgba(211,47,47,0.38), inset 0 1px 0 rgba(255,255,255,0.22);
+        }
+        .ver-date { color: var(--text-darker); font-size: 0.85rem; display: inline-flex; align-items: center; gap: 7px; font-weight: 500; }
+        .latest-tag {
+            margin-left: auto; font-size: 0.7rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+            color: #fff; background: rgba(211,47,47,0.16);
+            border: 1px solid rgba(211,47,47,0.45); padding: 5px 13px; border-radius: 999px;
+        }
+        .changes { list-style: none; display: flex; flex-direction: column; gap: 13px; }
+        .changes li {
+            position: relative; padding-left: 28px; color: var(--text); line-height: 1.55; font-size: 0.97rem;
+            transition: color .15s ease;
+        }
+        .changes li:hover { color: var(--text-light); }
+        .changes li::before {
+            content: ""; position: absolute; left: 4px; top: 7px;
+            width: 9px; height: 9px; border-radius: 3px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            transform: rotate(45deg);
+            box-shadow: 0 0 8px rgba(211,47,47,0.5);
+        }
+        .empty, .error { text-align: center; color: var(--text-dark); padding: 60px 20px; }
+        .error i, .empty i { font-size: 2rem; color: var(--primary); display: block; margin-bottom: 14px; }
+        .footer { border-top: 1px solid var(--border); text-align: center; padding: 26px; color: var(--text-darker); font-size: 0.84rem; }
+        .footer a { color: var(--text-dark); text-decoration: none; }
+        .footer a:hover { color: var(--primary-light); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a class="brand" href="https://bloodline.cc">
+                <img src="https://bloodline.cc/img/bloodline/bl_transparent.png" alt="Bloodline">
+                <span>
+                    <span class="brand-sub">Bloodline</span>
+                    <span class="brand-title">Changelog</span>
+                </span>
+            </a>
+            <nav class="nav-links">
+                <a href="https://bloodline.cc"><i class="fas fa-home"></i> Startseite</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Bot <span>Changelog</span></h1>
+        <p>Alle Updates und Verbesserungen am Bloodline Discord Bot — automatisch aktualisiert bei jedem Versions-Update.</p>
+    </section>
+
+    <main class="timeline" id="timeline">
+        <div class="empty"><i class="fas fa-spinner fa-spin"></i>Lade Changelog…</div>
+    </main>
+
+    <footer class="footer">
+        © Bloodline · Discord Bot &nbsp;·&nbsp; <a href="https://gesetz.bloodline.cc">gesetz.bloodline.cc</a>
+    </footer>
+
+    <script>
+        const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+        async function load() {
+            const root = document.getElementById('timeline');
+            try {
+                const res = await fetch('changelog.json?_=' + Date.now());
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                const versions = (data.versions || []).slice();
+                if (!versions.length) {
+                    root.innerHTML = '<div class="empty"><i class="fas fa-inbox"></i>Noch keine Einträge.</div>';
+                    return;
+                }
+                root.innerHTML = versions.map((v, idx) => {
+                    const changes = (v.changes || []).map(c => `<li>${esc(c)}</li>`).join('');
+                    return `
+                        <article class="release${idx === 0 ? ' latest' : ''}">
+                            <div class="release-head">
+                                <span class="ver-badge">v${esc(v.version || '?')}</span>
+                                ${v.date ? `<span class="ver-date"><i class="far fa-calendar"></i> ${esc(v.date)}</span>` : ''}
+                                ${idx === 0 ? '<span class="latest-tag">Neueste</span>' : ''}
+                            </div>
+                            <ul class="changes">${changes || '<li>—</li>'}</ul>
+                        </article>`;
+                }).join('');
+            } catch (e) {
+                root.innerHTML = '<div class="error"><i class="fas fa-triangle-exclamation"></i>Changelog konnte nicht geladen werden.<br>' + esc(e.message) + '</div>';
+            }
+        }
+        load();
+    </script>
+</body>
+</html>

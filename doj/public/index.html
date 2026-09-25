@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bloodline · Department of Justice — Gesetzbuch</title>
+    <link rel="canonical" href="https://gesetz.bloodline.cc/" />
+    <link rel="icon" href="/assets/doj.png" />
+    <meta name="description" content="Offizielles Gesetzbuch des Bloodline RP Servers — Department of Justice." />
+    <meta property="og:title" content="Bloodline Department of Justice" />
+    <meta property="og:image" content="/assets/doj.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="/">
+          <img src="/assets/doj.png" alt="DOJ Seal" />
+          <span class="brand-copy">
+            <span class="brand-eyebrow">Bloodline · Est. 1870</span>
+            <span class="brand-title">Department of Justice</span>
+          </span>
+        </a>
+        <nav>
+          <button data-tab="laws" id="nav-laws" class="active">Gesetzbuch</button>
+          <button data-tab="katalog" id="nav-katalog">Bußgeldkatalog</button>
+          <button data-tab="rechner" id="nav-rechner">Bußgeldrechner</button>
+          <button data-tab="changelog" id="nav-changelog">Änderungen</button>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="hero-eyebrow">Qui pro domina justitia sequitur</p>
+        <h1>Gesetzbuch von Los Santos</h1>
+        <p>
+          Vollständiges Rechtsarchiv des Bloodline Roleplay Servers. Verfassung,
+          Strafrecht, Verfahren, Verkehrs- und Spezialgesetze — direkt aus
+          den offiziellen Quellen des Department of Justice.
+        </p>
+      </div>
+      <div class="hero-seal"><img src="/assets/doj.png" alt="" /></div>
+    </section>
+
+    <main class="shell" id="main"></main>
+
+    <footer class="footer">
+      <div class="latin">Qui pro domina justitia sequitur · Est. 1870</div>
+      <div>© Bloodline Department of Justice — Inhalte mit Sorgfalt gepflegt durch befugte Sachbearbeiter.</div>
+    </footer>
+
+    <script src="/bussgeldkatalog.js" defer></script>
+    <script src="/los-santos-tabelle.js" defer></script>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

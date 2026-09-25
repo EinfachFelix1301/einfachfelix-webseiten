@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloodline</title>
+    <link rel="icon" type="image/png" href="https://bloodline.cc/img/bloodline/bl_transparent.png">
+    <link rel="apple-touch-icon" href="https://bloodline.cc/img/bloodline/bl_transparent.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #D32F2F;
+            --primary-hover: #FF3B3B;
+            --primary-light: #FF5252;
+            --dark-bg: #0a0a0a;
+            --text: #f0f0f0;
+            --text-light: #ffffff;
+            --text-dark: #9e9e9e;
+            --text-darker: #666666;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100%;
+            margin: 0;
+        }
+
+        /* Scrollbar nur wenn nötig */
+        .content-area {
+            scrollbar-width: thin;
+            scrollbar-color: #D32F2F transparent;
+        }
+        .content-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        .content-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .content-area::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #D32F2F, #FF3B3B);
+            border-radius: 10px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: relative;
+            z-index: 10;
+            border-bottom: 1px solid rgba(211,47,47,0.15);
+            background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%);
+            flex-shrink: 0;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .branding {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(211,47,47,0.3);
+        }
+
+        .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+        .logo-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .logo-text h1 .blood { color: #fff; }
+        .logo-text h1 .line { color: #FF3B3B; }
+
+        .logo-text .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            letter-spacing: 4px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .server-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Navigation */
+        .nav-dropdown { position: relative; z-index: 100; }
+
+        .nav-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(211,47,47,0.2), rgba(255,59,59,0.1));
+            border: 2px solid rgba(211,47,47,0.4);
+            border-radius: 10px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-toggle:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 25px rgba(211,47,47,0.3);
+        }
+
+        .nav-toggle i { transition: transform 0.3s; }
+        .nav-dropdown.open .nav-toggle i { transform: rotate(180deg); }
+
+        .nav-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 260px;
+            background: rgba(8,8,8,0.98);
+            border: 1px solid rgba(211,47,47,0.3);
+            border-radius: 14px;
+            padding: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .nav-dropdown.open .nav-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-dark);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover { background: rgba(211,47,47,0.15); color: var(--text-light); }
+        .nav-item.active { background: rgba(211,47,47,0.25); color: var(--primary-light); }
+        .nav-item i { width: 18px; color: var(--primary-light); }
+        .nav-divider { height: 1px; background: rgba(211,47,47,0.2); margin: 6px 0; }
+
+        /* ===== CONTENT ===== */
+        /* Content area layout defined in footer section */
+
+        .content-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 50px 60px;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 40px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(211,47,47,0.2);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+
+        .section-title span { color: var(--primary-light); }
+
+        /* ===== STARTSEITE - HERO ===== */
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            min-height: 500px;
+        }
+
+        .hero-content h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 25px;
+        }
+
+        .hero-content h2 .highlight {
+            color: var(--primary-light);
+            text-shadow: 0 0 30px rgba(211,47,47,0.5);
+        }
+
+        .hero-content p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-dark);
+            margin-bottom: 35px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(211,47,47,0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(211,47,47,0.5);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-light);
+            background: rgba(211,47,47,0.1);
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .hero-image-container::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            background: linear-gradient(135deg, rgba(211,47,47,0.2), transparent);
+            border-radius: 30px;
+            z-index: -1;
+        }
+
+        .hero-image {
+            width: 100%;
+            border-radius: 20px;
+            border: 2px solid rgba(211,47,47,0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        /* ===== TEAM SECTION ===== */
+        .team-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .team-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 25px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
+            border: 1px solid rgba(211,47,47,0.12);
+            border-radius: 14px;
+            transition: all 0.3s;
+        }
+
+        .team-card:hover {
+            border-color: rgba(211,47,47,0.4);
+            background: rgba(211,47,47,0.05);
+            transform: translateX(5px);
+        }
+
+        .team-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 0 15px rgba(211,47,47,0.3);
+        }
+
+        .team-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .team-info h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .team-info span {
+            font-size: 12px;
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        .team-section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--text-darker);
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(211,47,47,0.1);
+        }
+
+        /* ===== SUB-TABS ===== */
+        .sub-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(211,47,47,0.1);
+            border-radius: 12px;
+        }
+
+        .sub-tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px;
+            color: var(--text-dark);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sub-tab:hover { background: rgba(211,47,47,0.1); color: var(--text-light); }
+        .sub-tab.active { background: rgba(211,47,47,0.2); border-color: var(--primary-light); color: var(--primary-light); }
+
+        .sub-content { display: none; animation: fadeIn 0.3s; }
+        .sub-content.active { display: block; }
+
+        /* ===== GESETZBUCH & BUSSRECHNER ===== */
+        .bussgeld-rechner {
+            background: linear-gradient(135deg, rgba(211,47,47,0.08), rgba(211,47,47,0.03));
+            border: 1px solid rgba(211,47,47,0.25);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .rechner-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .rechner-header i {
+            font-size: 24px;
+            color: var(--primary-light);
+        }
+        .rechner-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        .rechner-search {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .rechner-search input {
+            width: 100%;
+            padding: 14px 20px 14px 45px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(211,47,47,0.3);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .rechner-search input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 15px rgba(211,47,47,0.2);
+        }
+        .rechner-search input::placeholder { color: var(--text-darker); }
+        .rechner-search i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-light);
+        }
+        .rechner-results {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        .rechner-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .rechner-result-item:hover {
+            border-color: rgba(211,47,47,0.4);
+            background: rgba(211,47,47,0.1);
+        }
+        .rechner-result-item.selected {
+            border-color: var(--primary-light);
+            background: rgba(211,47,47,0.15);
+        }
+        .rechner-summe {
+            padding: 20px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(211,47,47,0.3);
+            border-radius: 10px;
+        }
+        .summe-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .summe-row span:last-child {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+        .btn-clear {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: var(--text-dark);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-clear:hover {
+            border-color: var(--primary-light);
+            color: var(--primary-light);
+        }
+
+        /* Gesetz Items */
+        .gesetz-item {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-left: 3px solid var(--primary);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .gesetz-item:hover {
+            border-color: rgba(211,47,47,0.3);
+            background: rgba(211,47,47,0.05);
+            transform: translateX(5px);
+        }
+        .gesetz-item.selected {
+            border-color: var(--primary-light);
+            background: rgba(211,47,47,0.1);
+        }
+        .gesetz-header {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+            flex: 1;
+            min-width: 300px;
+        }
+        .gesetz-para {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary-light);
+            white-space: nowrap;
+        }
+        .gesetz-titel {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        .gesetz-strafe {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .strafe-geld {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4CAF50;
+            min-width: 100px;
+            text-align: right;
+        }
+        .strafe-he {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #FF9800;
+            min-width: 80px;
+            text-align: right;
+        }
+        .gesetz-extra {
+            width: 100%;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 12px;
+            color: var(--text-dark);
+            font-style: italic;
+        }
+        @media (max-width: 768px) {
+            .gesetz-header { min-width: 100%; margin-bottom: 10px; }
+            .gesetz-strafe { width: 100%; justify-content: flex-start; }
+        }
+
+        /* ===== RULES ===== */
+        .rule-item {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .rule-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .rule-number {
+            color: var(--primary-light);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .rule-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .rule-text {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-dark);
+            padding-left: 45px;
+        }
+
+        .rule-category-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(211,47,47,0.2);
+        }
+
+        .rule-category-header span {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--primary-light);
+        }
+
+        /* ===== TEBEX ===== */
+        .tebex-hero {
+            text-align: center;
+            padding: 50px 40px;
+            background: linear-gradient(135deg, rgba(211,47,47,0.08), rgba(211,47,47,0.03));
+            border: 1px solid rgba(211,47,47,0.2);
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+
+        .tebex-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            border-radius: 50%;
+            box-shadow: 0 10px 40px rgba(211,47,47,0.4);
+        }
+
+        .tebex-icon i { font-size: 35px; color: #000; }
+
+        .tebex-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .tebex-description {
+            font-size: 14px;
+            color: var(--text-dark);
+            max-width: 550px;
+            margin: 0 auto 25px;
+            line-height: 1.7;
+        }
+
+        .tebex-features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .tebex-feature {
+            text-align: center;
+            padding: 20px 15px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(211,47,47,0.1);
+            border-radius: 12px;
+        }
+
+        .tebex-feature i { font-size: 24px; color: var(--primary-light); margin-bottom: 10px; }
+        .tebex-feature h4 { font-family: 'Orbitron', sans-serif; font-size: 11px; letter-spacing: 1px; margin-bottom: 5px; }
+        .tebex-feature p { font-size: 11px; color: var(--text-dark); }
+
+        /* ===== DISCORD ===== */
+        .discord-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .discord-card {
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(88,101,242,0.08), rgba(88,101,242,0.03));
+            border: 1px solid rgba(88,101,242,0.25);
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .discord-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(88,101,242,0.2); }
+
+        .discord-card.main-server {
+            background: linear-gradient(135deg, rgba(211,47,47,0.08), rgba(211,47,47,0.03));
+            border-color: rgba(211,47,47,0.25);
+        }
+
+        .discord-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+
+        .discord-avatar {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #5865F2;
+            border-radius: 12px;
+        }
+
+        .discord-card.main-server .discord-avatar { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); }
+        .discord-avatar i { font-size: 22px; color: white; }
+        .discord-card.main-server .discord-avatar i { color: #000; }
+
+        .discord-info h4 { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+        .discord-info span { font-size: 11px; color: var(--text-dark); }
+
+        .discord-description { font-size: 12px; color: var(--text-dark); line-height: 1.5; margin-bottom: 15px; }
+
+        .discord-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #5865F2;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .discord-btn:hover { background: #4752C4; transform: translateY(-2px); }
+        .discord-card.main-server .discord-btn { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #000; }
+
+        /* ===== LAYOUT - Fixed Header/Footer ===== */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 20% 0%, rgba(211,47,47,0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 100%, rgba(211,47,47,0.06) 0%, transparent 50%),
+                        var(--dark-bg);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            z-index: 5;
+        }
+
+        .footer {
+            flex-shrink: 0;
+            border-top: 1px solid rgba(211,47,47,0.15);
+            background: rgba(0,0,0,0.5);
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 60px;
+            text-align: center;
+        }
+
+        .footer-text { font-size: 11px; color: var(--text-darker); }
+        .footer-text a { color: var(--primary-light); text-decoration: none; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .hero-section { grid-template-columns: 1fr; text-align: center; }
+            .hero-buttons { justify-content: center; }
+            .hero-visual { margin-top: 40px; }
+            .tebex-features { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .header-inner { flex-direction: column; gap: 20px; padding: 20px 30px; }
+            .content-inner { padding: 30px; }
+            .team-row { grid-template-columns: 1fr; }
+            .discord-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .hero-content h2 { font-size: 28px; }
+            .tebex-features { grid-template-columns: 1fr; }
+            .sub-tabs { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-inner">
+                <div class="branding">
+                    <div class="logo-icon">
+                        <img src="https://bloodline.cc/img/bloodline/bl_transparent.png" alt="Bloodline">
+                    </div>
+                    <div class="logo-text">
+                        <h1><span class="blood">BLOOD</span><span class="line">LINE</span></h1>
+                        <span class="tagline">GTA V Roleplay Server</span>
+                    </div>
+                </div>
+
+                <div class="server-info">
+                    <div class="nav-dropdown" id="navDropdown">
+                        <button class="nav-toggle" onclick="toggleNav()">
+                            <span>MENU</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="nav-menu">
+                            <button class="nav-item active" data-tab="startseite"><i class="fas fa-home"></i> Startseite</button>
+                            <button class="nav-item" data-tab="team"><i class="fas fa-users-cog"></i> Team</button>
+                            <div class="nav-divider"></div>
+                            <button class="nav-item" data-tab="allgemeine-regeln"><i class="fas fa-gavel"></i> Allgemeine Regeln</button>
+                            <button class="nav-item" data-tab="roleplay-regeln"><i class="fas fa-theater-masks"></i> Roleplay Regeln</button>
+                            <button class="nav-item" data-tab="fraktionsregelwerk"><i class="fas fa-shield-alt"></i> Fraktionsregelwerk</button>
+                            <button class="nav-item" data-tab="gesetzbuch"><i class="fas fa-balance-scale"></i> Gesetzbuch</button>
+                            <div class="nav-divider"></div>
+                            <button class="nav-item" data-tab="aenderungen"><i class="fas fa-clock-rotate-left"></i> Änderungen</button>
+                            <div class="nav-divider"></div>
+                            <button class="nav-item" data-tab="tebex"><i class="fas fa-shopping-cart"></i> Shop</button>
+                            <button class="nav-item" data-tab="discord"><i class="fab fa-discord"></i> Discord</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <main class="content-area">
+            <div class="content-inner">
+
+                <!-- STARTSEITE -->
+                <div class="tab-content active" id="startseite">
+                    <div class="hero-section">
+                        <div class="hero-content">
+                            <h2>DEIN NEUES<br><span class="highlight">ROLEPLAY</span><br>ABENTEUER</h2>
+                            <p>Tauche ein in die Welt von Los Santos. Erlebe packende Geschichten, grunde dein Imperium oder werde Teil einer Fraktion. Bei Bloodline bestimmst du, wer du sein willst.</p>
+                            <div class="hero-buttons">
+                                <a href="#" class="btn-secondary" onclick="switchTab('allgemeine-regeln')">
+                                    <i class="fas fa-book"></i> REGELWERK
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hero-visual">
+                            <div class="hero-image-container">
+                                <img src="https://bloodline.cc/img/bloodline/bloodline2.png" alt="Bloodline" class="hero-image">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TEAM -->
+                <div class="tab-content" id="team">
+                    <div class="section-header">
+                        <h2 class="section-title">BLOODLINE <span>TEAM</span></h2>
+                    </div>
+
+                    <!-- Team wird automatisch von Discord geladen -->
+                    <div id="team-container">
+                        <div class="team-section-title">PROJEKTLEITUNG</div>
+                        <div class="team-row">
+                            <div class="team-card">
+                                <div class="team-icon"><img src="https://bloodline.cc/img/bloodline/bl_transparent.png" alt="S"></div>
+                                <div class="team-info">
+                                    <h4>Seltonmt</h4>
+                                    <span>Projektinhaber</span>
+                                </div>
+                            </div>
+                            <div class="team-card">
+                                <div class="team-icon"><img src="https://bloodline.cc/img/bloodline/bl_transparent.png" alt="F"></div>
+                                <div class="team-info">
+                                    <h4>Felix</h4>
+                                    <span>Projektinhaber</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALLGEMEINE REGELN -->
+                <div class="tab-content" id="allgemeine-regeln">
+                    <div class="section-header">
+                        <h2 class="section-title">ALLGEMEINE <span>REGELN</span></h2>
+                    </div>
+
+                    <div class="sub-tabs">
+                        <button class="sub-tab active" data-subtab="allg-grund">Grundregeln</button>
+                        <button class="sub-tab" data-subtab="allg-rp">Roleplay Grundsätze</button>
+                    </div>
+
+                    <div class="sub-content active" id="allg-grund">
+                        <div class="rule-category-header"><span>GRUNDREGELN</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Altersbeschränkung</span></div>
+                            <p class="rule-text">Das Spielen auf dem Roleplay-Server ist ab 16 Jahren gestattet. In Ausnahmefällen kann dies auch ab dem 15. Lebensjahr erlaubt sein, sofern eine angemessene Reife nachgewiesen wird.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Regelkonformes Verhalten</span></div>
+                            <p class="rule-text">Das aktive Suchen und Ausnutzen von Grauzonen im Regelwerk ist verboten.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Werbung für externe GTA V-Projekte</span></div>
+                            <p class="rule-text">Es ist untersagt, für externe GTA V-Projekte auf Plattformen von Bloodline zu werben.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§4.0</span><span class="rule-title">Verkauf und Handel von Spielerkonten und In-Game-Gegenständen</span></div>
+                            <p class="rule-text">Der Verkauf und Handel von Spielerkonten, Gegenständen und Währungen aus dem Spiel gegen externe Gegenstände und Währungen ist verboten.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§5.0</span><span class="rule-title">Spielumgebung</span></div>
+                            <p class="rule-text">Das Roleplay (RP) findet in Los Santos statt.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§6.0</span><span class="rule-title">Midcore Server</span></div>
+                            <p class="rule-text">Wir sind ein Midcore-Server und legen besonderen Wert auf die Einhaltung unserer Regeln.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="allg-rp">
+                        <div class="rule-category-header"><span>ROLEPLAY GRUNDSÄTZE</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Priorität der Charaktergesundheit</span></div>
+                            <p class="rule-text">Die Gesundheit und das Überleben deines Charakters stehen stets an erster Stelle und sollten in jeder Roleplay-Situation berücksichtigt werden.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Beachtung des sozialen Status</span></div>
+                            <p class="rule-text">Sei dir bewusst über deinen sozialen Status und handle entsprechend.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Abbruch bei persönlichem Unwohlsein</span></div>
+                            <p class="rule-text">Falls eine Person sich aufgrund einer Roleplay-Situation extrem moralisch oder persönlich angegriffen fühlt, muss die Situation beendet werden.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§4.0</span><span class="rule-title">Mitteilung bei technischen Problemen</span></div>
+                            <p class="rule-text">Spieler, die aufgrund technischer Probleme eine Roleplay-Situation vorzeitig verlassen müssen, sind verpflichtet, die beteiligten Spieler über Discord über ihren Ausfall zu informieren. Ist dies nicht möglich, muss der Support kontaktiert werden.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§5.0</span><span class="rule-title">Verbot der Ausnutzung technischer Probleme</span></div>
+                            <p class="rule-text">Das Ausnutzen von technischen Problemen anderer Mitspieler ist untersagt.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§6.0</span><span class="rule-title">Diebstahl staatlicher Fahrzeuge</span></div>
+                            <p class="rule-text">Staatliche Fahrzeuge dürfen nicht gestohlen werden, es sei denn, es liegt ein RP Strang/Sinn vor.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROLEPLAY REGELN -->
+                <div class="tab-content" id="roleplay-regeln">
+                    <div class="section-header">
+                        <h2 class="section-title">ROLEPLAY <span>REGELN</span></h2>
+                    </div>
+
+                    <div class="sub-tabs">
+                        <button class="sub-tab active" data-subtab="rp-rdm">RDM</button>
+                        <button class="sub-tab" data-subtab="rp-vdm">VDM</button>
+                        <button class="sub-tab" data-subtab="rp-power">Power RP</button>
+                        <button class="sub-tab" data-subtab="rp-scripted">Scripted RP</button>
+                        <button class="sub-tab" data-subtab="rp-drittpartei">Dritt Partei</button>
+                        <button class="sub-tab" data-subtab="rp-fail">Fail RP</button>
+                        <button class="sub-tab" data-subtab="rp-flucht">RP Flucht</button>
+                        <button class="sub-tab" data-subtab="rp-meta">Meta Gaming</button>
+                        <button class="sub-tab" data-subtab="rp-trolling">Trolling</button>
+                        <button class="sub-tab" data-subtab="rp-newlife">New Life</button>
+                        <button class="sub-tab" data-subtab="rp-schusscall">Schusscall</button>
+                        <button class="sub-tab" data-subtab="rp-reaktion">Reaktionszeit</button>
+                        <button class="sub-tab" data-subtab="rp-maske">Maskierung</button>
+                        <button class="sub-tab" data-subtab="rp-geisel">Geiselnahme</button>
+                        <button class="sub-tab" data-subtab="rp-durchsuchen">Durchsuchen</button>
+                    </div>
+
+                    <div class="sub-content active" id="rp-rdm">
+                        <div class="rule-category-header"><span>RANDOM DEATHMATCH (RDM)</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Gewalt gegen andere Spieler ohne berechtigten Grund ist nicht erlaubt</span></div>
+                            <p class="rule-text">Es ist nicht gestattet, andere Spieler zu töten, zu beschießen oder anzugreifen, es sei denn, es gibt einen nachvollziehbaren Grund dafür.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-vdm">
+                        <div class="rule-category-header"><span>VEHICLE DEATHMATCH (VDM)</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Kein Töten, Anfahren oder Angreifen von Spielern mit Fahrzeugen</span></div>
+                            <p class="rule-text">Es ist grundsätzlich untersagt, andere Spieler zu töten, anzufahren oder anzugreifen, insbesondere unter Verwendung von Fahrzeugen.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-power">
+                        <div class="rule-category-header"><span>POWER RP</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Power RP: Respekt für die Spielhandlung des Anderen</span></div>
+                            <p class="rule-text">Power RP bedeutet, einem anderen Spieler nicht die Möglichkeit zu geben, auf die eigene Spielhandlung zu reagieren, oder ihm sein Rollenspiel aufzuzwingen, ohne Raum für Handlungen zu lassen.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Zwanghafte Geldautomatenauszahlungen sind nicht gestattet</span></div>
+                            <p class="rule-text">Es ist unangemessen, andere Spieler zur Auszahlung an Geldautomaten zu zwingen.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-scripted">
+                        <div class="rule-category-header"><span>SCRIPTED RP</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Absprachen über den Verlauf von RP-Situationen</span></div>
+                            <p class="rule-text">Es ist untersagt, im Voraus mit den beteiligten Parteien außerhalb des Spiels über den Verlauf oder das Ergebnis von RP-Situationen oder Handlungssträngen zu kommunizieren.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-drittpartei">
+                        <div class="rule-category-header"><span>DRITT PARTEI</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Dritt Partei: Einmischen ohne Zusammenhang im Roleplay</span></div>
+                            <p class="rule-text">Unter Dritt Partei versteht man das Einmischen in eine Roleplaysituation, ohne einen direkten Bezug dazu zu haben.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-fail">
+                        <div class="rule-category-header"><span>FAIL RP</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Fail RP - Rollenspielrealismus wahren</span></div>
+                            <p class="rule-text">Das Verlassen der Rolle im Rollenspiel oder das unangemessene Ausführen einer RP-Situation wird als "Fail RP" bezeichnet. Es ist wichtig, sich stets zu fragen, ob die Aktion, die man ausführt, realistisch für den eigenen Charakter ist.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Fahrzeugnutzung im Gebirge</span></div>
+                            <p class="rule-text">Fahrzeuge, die tiefergelegt sind oder offenkundig nicht für Offroad-Fahrten geeignet sind, dürfen im Gebirge nicht verwendet werden. Eine Ausnahme bilden lediglich Nutzfahrzeuge, wie Kleintransporter (z.B. Burrito, Youga, etc.), während LKW ausgeschlossen sind.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Fahrzeugnutzung mit Platten</span></div>
+                            <p class="rule-text">Fahrzeugnutzung mit Platten ist in bestimmten Fällen stark eingeschränkt. Wenn ein PKW zwei Platten hat, ist es nicht gestattet, weiterzufahren. In solchen Situationen sollte das Fahrzeug abgestellt und repariert werden, bevor die Fahrt fortgesetzt wird.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-flucht">
+                        <div class="rule-category-header"><span>RP FLUCHT</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Verbot der Flucht aus Roleplay-Situationen</span></div>
+                            <p class="rule-text">Das Verlassen einer Roleplay-Situation durch einen Quit, Entfernen aus der Situation ist nicht erlaubt (z.B. RP Flucht).</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Das Verstecken in nicht betretbaren Gebäuden</span></div>
+                            <p class="rule-text">Das Verbergen in nicht für andere zugänglichen Wohnungen, Firmen oder ähnlichen Gebäuden, um einer Roleplay-Situation zu entkommen oder sich unfaire Vorteile zu verschaffen, ist untersagt.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-meta">
+                        <div class="rule-category-header"><span>META GAMING</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Fairplay und Metagaming - Kein Spielwissen außerhalb des Spiels nutzen</span></div>
+                            <p class="rule-text">Es ist wichtig, dass du keine Informationen, die du außerhalb des Spiels erworben hast (OOC), im Spiel (IC) verwendest. Dein Charakter sollte nur über Informationen verfügen, die er innerhalb des Spiels erhalten hat.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Keine Nutzung von Livestream-Informationen im Spiel</span></div>
+                            <p class="rule-text">Es ist nicht erlaubt, Informationen aus Livestreams im Spiel zu verwenden. Ebenso solltest du dich nicht am Chat- oder Streamgeschehen eines Streamers beteiligen, auch nicht, wenn der eigene Charakter in der im Stream gezeigten Situation involviert ist.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-trolling">
+                        <div class="rule-category-header"><span>TROLLING</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Unfairness und Belästigung im Spielumfeld</span></div>
+                            <p class="rule-text">Im Spielumfeld ist es wichtig, Fairness zu wahren und andere Spieler nicht zu belästigen oder das Spielerlebnis absichtlich zu stören.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-newlife">
+                        <div class="rule-category-header"><span>NEW LIFE REGEL</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Die New-Life Regel und die Nachsorge durch das Not-OP Team</span></div>
+                            <p class="rule-text">Sollte ein Mediziner vor Ort nicht verfügbar sein und du erwachst an einem nahegelegenen Ort, bedeutet dies, dass du vom Not-OP Team behandelt und nach erfolgreicher Genesung entlassen wurdest (die New-Life Regel tritt in Kraft). Du darfst dich nicht daran erinnern, wie du ohnmächtig geworden bist oder was während deiner Bewusstlosigkeit geschehen ist. Nach der Behandlung durch das Not-OP Team ist es dir nicht gestattet, zur vorherigen RP-Situation zurückzukehren.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Erinnerung nach ärztlicher Behandlung</span></div>
+                            <p class="rule-text">Wenn dich ein Mediziner behandelt und wiederbelebt hat, darfst du dich an die spezielle RP-Situation erinnern.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Fehlende Erinnerung während der Bewusstlosigkeit</span></div>
+                            <p class="rule-text">Während der Bewusstlosigkeit kannst du dich an keine Geschehnisse erinnern.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§4.0</span><span class="rule-title">Akzeptanz der Bewusstlosigkeit im Spiel</span></div>
+                            <p class="rule-text">Die Bewusstlosigkeit im Spiel muss, unabhängig von ihrem Grund (einschließlich Desynchronisation oder Bugs), akzeptiert und im Roleplay ausgespielt werden.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§5.0</span><span class="rule-title">Teilnahme an vorangegangenen RP-Situationen verboten</span></div>
+                            <p class="rule-text">Du darfst nicht an der vorherigen RP-Situation teilnehmen.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-schusscall">
+                        <div class="rule-category-header"><span>SCHUSSCALL</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Schusscall</span></div>
+                            <p class="rule-text">Auf Bloodline benötigt man einen Schusscall. (z.B. Hände hoch oder ich schieße). Stichwaffen sind davon ausgeschlossen.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Dauer</span></div>
+                            <p class="rule-text">Ein Schusscall dauert 15 min an.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§4.0</span><span class="rule-title">Aufhebung im Support bei einem berechtigten Grund</span></div>
+                            <p class="rule-text">Es ist möglich, einen Schuss Call durch den Support aufheben zu lassen, sofern ein stichhaltiger Grund vorliegt.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§5.0</span><span class="rule-title">Indirekter Schusscall</span></div>
+                            <p class="rule-text">• Längeres Zielen auf eine Person (ca. 5 Sekunden)<br>• Bedrohungen des IC-Lebens</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§6.0</span><span class="rule-title">Kein Grund für eine Schießerei</span></div>
+                            <p class="rule-text">• Beleidigungen<br>• Taser / Stanley (Pumpshotgun)</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-reaktion">
+                        <div class="rule-category-header"><span>REAKTIONSZEIT</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Gib deinem Gegenüber stets ausreichend Zeit für Reaktionen</span></div>
+                            <p class="rule-text">Es ist wichtig sicherzustellen, dass du deinem Gegenüber immer genug Zeit gibst, um angemessen zu reagieren. ca. 5 Sekunden</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-maske">
+                        <div class="rule-category-header"><span>MASKIERUNG</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Vollmaskierung</span></div>
+                            <p class="rule-text">Spieler, die eine Vollmaskierung tragen, dürfen nicht anhand ihrer Stimme oder ihres Akzents erkannt werden. Eine Vollmaskierung bedeutet das dein ganze Gesicht abgedeckt ist. Ein Bandana an sich reicht nicht!</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Einfache Masken und Identitätsverschleierung</span></div>
+                            <p class="rule-text">Eine einfache Maske oder Bandana, die den Mund bedeckt, wird nicht als Vollmaskierung betrachtet. Der maskierte Spieler sollte alles tun, um seine Identität zu verschleiern, einschließlich der Verwendung unauffälliger Kleidung und eines anderen Fahrzeugs.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Identifizierung und Sichtkontakt</span></div>
+                            <p class="rule-text">Die Identifizierung eines Spielers kann nur durch Sichtkontakt erfolgen. Ein Spieler in einem anderen Raum wird erst als identifiziert betrachtet, wenn er gesehen wird. Im Falle von Anrufen gilt: Der Anrufer von einer unbekannten Rufnummer wird als unbekannt betrachtet. In diesem Fall sind auch Stimmverzerrer erlaubt, sofern sie in ein ordentliches RP-Hintergrund passen. Diese Regel gilt auch für Funkgeräte.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-geisel">
+                        <div class="rule-category-header"><span>GEISELNAHME - REGELN</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Priorität des RP bei Geiselnahmen</span></div>
+                            <p class="rule-text">Bei einer Geiselnahme sollte das Rollenspiel (RP) immer im Vordergrund stehen, und nicht das Lösegeld oder Equipment.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Unabhängige Geiselnahmen durch Gruppierungen</span></div>
+                            <p class="rule-text">Gruppierungen müssen eine Geiselnahme ohne Unterstützung von anderen Parteien durchführen.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Lösegeld für Zivilisten/Beamten</span></div>
+                            <p class="rule-text">Es darf maximal 5.000$ gefordert werden aber im Vordergrund steht das RP. Z.B Es wird 20.000$ gefordert so verhandelt mit der Person und sagt nicht gleich ist nicht erlaubt!</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="rp-durchsuchen">
+                        <div class="rule-category-header"><span>DURCHSUCHEN / ABNEHMEN</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Staatswaffen</span></div>
+                            <p class="rule-text">Vom SWAT oder allgemein Staatlichen Fraktionen dürfen gewisse Items nicht abgenommen werden:<br>• Einsatzschild<br>• jegdliche Art von Waffen</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Verboten Items</span></div>
+                            <p class="rule-text">Es gibt gewisse Gegenstände die du nicht abnehmen darfst:<br>• Angeln<br>• Rucksack</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Abnehmen/Geld</span></div>
+                            <p class="rule-text">Es darf alles bis auf das oben genannte abgenommen werden. Es darf max. 5k Grüngeld abgenommen werden.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FRAKTIONSREGELWERK -->
+                <div class="tab-content" id="fraktionsregelwerk">
+                    <div class="section-header">
+                        <h2 class="section-title">FRAKTIONS<span>REGELWERK</span></h2>
+                    </div>
+
+                    <div class="sub-tabs">
+                        <button class="sub-tab active" data-subtab="frak-allgemein">Fraktionsregeln</button>
+                        <button class="sub-tab" data-subtab="frak-routen">Routen Regeln</button>
+                        <button class="sub-tab" data-subtab="frak-banden">Banden Regeln</button>
+                        <button class="sub-tab" data-subtab="frak-gangwar">Gangwar Regeln</button>
+                    </div>
+
+                    <div class="sub-content active" id="frak-allgemein">
+                        <div class="rule-category-header"><span>FRAKTIONSREGELN</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Mitgliederregelung</span></div>
+                            <p class="rule-text">Maximal 20 Mitglieder pro Fraktion + 2 Frauenplätze</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.1</span><span class="rule-title">Blood Out</span></div>
+                            <p class="rule-text">Bei einem Blood Out vergisst du alle Infos, die du durch deine Fraktion gewonnen hast. Fraktionsperre: 3 Tage</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.2</span><span class="rule-title">Erkennungsmerkmale</span></div>
+                            <p class="rule-text">Mitglieder illegaler Fraktionen müssen durch zwei klar erkennbare Merkmale identifizierbar sein</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.3</span><span class="rule-title">Fahrzeugvorschriften</span></div>
+                            <p class="rule-text">Fraktionsfahrzeuge müssen eindeutig gekennzeichnet sein (nur aus Fraktionsgaragen). Private Fahrzeuge für Fraktionsaktivitäten sind nicht gestattet</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.4</span><span class="rule-title">Drittpartei</span></div>
+                            <p class="rule-text">Die Einmischung einer dritten Partei ist untersagt</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.5</span><span class="rule-title">Baseraid</span></div>
+                            <p class="rule-text">Pro Server-Restart ein Baseraid. Keine Angriffe 30 Minuten vor oder nach Neustarts. Das Abcampen von GW-Punkten ist verboten. Unbefugtes Betreten eines Anwesens/einer Hood wird als Baseraid gewertet</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.6</span><span class="rule-title">Sicario</span></div>
+                            <p class="rule-text">48-stündige Sperre nach Austritt. Rückkehr zur Ursprungsfraktion nach 1 Monat möglich. Eine Sicario muss beim Frakverwaltung angefragt werden. Bis zu 10% des Lagers dürfen entnommen werden</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.7</span><span class="rule-title">Stürzen</span></div>
+                            <p class="rule-text">Beim Stürzen muss 80% der Familie hinter dir stehen (4 Leute dürfen maximal dagegenstimmen). Ein Stürzen des Leaders muss bei der Frakverwaltung angefragt werden.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.8</span><span class="rule-title">Konflikteinleitung</span></div>
+                            <p class="rule-text">Zwei vorherige Verhandlungen mit der gegnerischen Führung notwendig. Konkrete Forderungen müssen klar kommuniziert werden</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.9</span><span class="rule-title">Konfliktprotokollierung</span></div>
+                            <p class="rule-text">Konfliktgründe sind unverzüglich im Fraktions-Discord zu dokumentieren. Für einen Konflikt sind Konflikt Clips nötig</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.10</span><span class="rule-title">Forderungen</span></div>
+                            <p class="rule-text">Die Maximalforderung ohne Kriegsvertrag beträgt 50.000€. Die Maximalforderung mit Kriegsvertrag beträgt 100.000€</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.11</span><span class="rule-title">Verbot von Söldnern</span></div>
+                            <p class="rule-text">Leute, die nur fürs Schießen kommen, werden aussortiert, und die Fraktion wird ebenfalls sanktioniert. Bei Verstößen: Fraktionsverwarnung</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.12</span><span class="rule-title">Routen</span></div>
+                            <p class="rule-text">Jede Fraktion darf nur eine Route besitzen. Unterlegene Fraktion: 10-tägige Wartefrist für erneuten Anspruch</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.13</span><span class="rule-title">Routenkrieg</span></div>
+                            <p class="rule-text">Anspruch durch Forderung bei der Fraktion. Kriegsvertrag muss innerhalb von 48 Stunden bei der Fraktionsverwaltung eingereicht werden</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.14</span><span class="rule-title">Konfliktabschluss</span></div>
+                            <p class="rule-text">Wenn die Fraktion auszahlt, ist der Krieg offiziell vorbei</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.15</span><span class="rule-title">Zahlungsmodalitäten</span></div>
+                            <p class="rule-text">Forderungen sind persönlich zwischen den 12ern zu begleichen</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">First-Contact-Regel</span></div>
+                            <p class="rule-text">Bei Kampfbeginn müssen alle innerhalb von 10 Sekunden Fahrzeuge verlassen. Backstep muss 5 Minuten nach First Contact aussteigen. Erlaubtes Fahrzeuge: Komoda. Verstoß: Automatische Niederlage</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.1</span><span class="rule-title">Lagerverwaltung</span></div>
+                            <p class="rule-text">Plünderung des Fraktionslagers untersagt (Ausnahme: §1.6). Private Vorräte sind nicht gestattet</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.2</span><span class="rule-title">Trash-Talk</span></div>
+                            <p class="rule-text">Nur Rang 11/12 dürfen nach Kämpfen verbale Provokationen äußern. Unterlegene müssen sich der siegreichen Fraktion unterordnen</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.3</span><span class="rule-title">Korruptionsbestimmungen</span></div>
+                            <p class="rule-text">DOJ & Regierung: Informationsweitergabe erlaubt. LSPD (bis Rang 10): Informationsweitergabe erlaubt. LSMD: Nur Informationsweitergabe erlaubt</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.4</span><span class="rule-title">Razzia</span></div>
+                            <p class="rule-text">Einzelne Straftaten dürfen nicht als Razzia-Grund dienen</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="frak-routen">
+                        <div class="rule-category-header"><span>ROUTEN REGELN</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Legale und Illegale Routen</span></div>
+                            <p class="rule-text">Es gibt legale und illegale Routen. Legale Routen dürfen nicht eingenommen werden, während illegale Routen eingenommen werden können.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Legale Routen</span></div>
+                            <p class="rule-text">• Westen<br>• Tabak<br>• Apfel<br>• Metallplatten</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Illegale Routen</span></div>
+                            <p class="rule-text">• Waffenroute<br>• Metall<br>• Munition<br>• Weed<br>• Kokain</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§4.0</span><span class="rule-title">Routen Razzia</span></div>
+                            <p class="rule-text">Auf jeder illegalen Route kann alle 24 Stunden eine Razzia durchgeführt werden. Bei einer Razzia werden alle auf der Route befindlichen Waren konfisziert.<br><br><strong>Verteidigung der Route:</strong> Eine Route darf nur von den rechtmäßigen Besitzern und denjenigen verteidigt werden, die sich aktuell auf der Route befinden. Dies bedeutet, dass nur die Mitglieder der Gruppierung, die sich zum Zeitpunkt der Razzia auf der Route befinden, aktiv an der Verteidigung teilnehmen dürfen.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="frak-banden">
+                        <div class="rule-category-header"><span>BANDEN REGELN</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">Banden und ihre Merkmale</span></div>
+                            <p class="rule-text">Banden sind informelle Gruppierungen, die nicht offiziell angemeldet sind. Sie bestehen aus höchstens 6 Zivilisten, die gemeinsam kriminelle Aktivitäten ausüben. Sie brauchen mindestens 3 gleiche Erkennungsmerkmale.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">Mitgliederbegrenzung</span></div>
+                            <p class="rule-text">Die Höchstgrenze von 6 Personen darf nicht überschritten werden.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§3.0</span><span class="rule-title">Interaktion mit angemeldeten Gruppierungen</span></div>
+                            <p class="rule-text">Banden sollten sich in laufenden Situationen von angemeldeten Gruppierungen fernhalten.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§4.0</span><span class="rule-title">Kontinuität in RP-Strängen</span></div>
+                            <p class="rule-text">Innerhalb eines Zeitraums von 24 Stunden sollten die Spieler in einem RP-Strang keine gravierenden Veränderungen vornehmen.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-content" id="frak-gangwar">
+                        <div class="rule-category-header"><span>GANGWAR REGELN</span></div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§1.0</span><span class="rule-title">First Contact</span></div>
+                            <p class="rule-text">Der Masse steigt bei den ersten Kontakt zu der gegen Partei aus. Der Backstep hat dann noch 5 Minuten Zeit bis er selbst aussteigen muss!</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="rule-header"><span class="rule-number">§2.0</span><span class="rule-title">OOC Zone</span></div>
+                            <p class="rule-text">Alles was in Gangwar passiert bleibt in Gangwar. Es dürfen deswegen keine Kriege/Fights entstehen.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GESETZBUCH -->
+                <div class="tab-content" id="gesetzbuch">
+                    <div class="section-header">
+                        <h2 class="section-title">GESETZ<span>BUCH</span></h2>
+                    </div>
+
+                    <!-- Gesetzbuch ausgelagert zu gesetz.bloodline.cc -->
+                    <div class="gesetz-cta" style="text-align:center;padding:60px 20px;">
+                        <i class="fas fa-balance-scale" style="font-size:3rem;color:var(--primary);margin-bottom:20px;"></i>
+                        <h3 style="font-family:'Orbitron',sans-serif;font-size:1.5rem;margin-bottom:12px;color:var(--text-light);">Das Gesetzbuch ist umgezogen</h3>
+                        <p style="color:var(--text-dark);max-width:540px;margin:0 auto 28px;line-height:1.6;">Alle Gesetze, der Bußgeldkatalog und Vorschläge findest du jetzt im offiziellen Department-of-Justice-Portal – immer aktuell.</p>
+                        <a href="https://gesetz.bloodline.cc" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--primary),var(--primary-hover));color:#fff;padding:14px 32px;border-radius:10px;font-weight:700;text-decoration:none;font-size:1.05rem;box-shadow:0 6px 20px rgba(211,47,47,0.35);">
+                            <i class="fas fa-external-link-alt"></i> Zum Gesetzbuch öffnen
+                        </a>
+                    </div>
+                </div>
+
+                <style>
+                    .rw-change { display:block; }
+                    .rw-meta { color:var(--text-dark); font-size:.82rem; margin:2px 0 12px; }
+                    .rw-diff { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:10px 0 14px; }
+                    @media (max-width:760px){ .rw-diff{ grid-template-columns:1fr; } }
+                    .rw-col { border:1px solid rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; background:rgba(255,255,255,0.02); }
+                    .rw-col-h { font-size:.72rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; padding:8px 12px; }
+                    .rw-old { background:rgba(229,83,75,0.14); color:#ff8a8a; border-bottom:1px solid rgba(229,83,75,0.3); }
+                    .rw-new { background:rgba(63,185,80,0.14); color:#6ee49a; border-bottom:1px solid rgba(63,185,80,0.3); }
+                    .rw-col-b { padding:12px 14px; font-size:.9rem; line-height:1.5; color:var(--text); max-height:280px; overflow:auto; }
+                    .rw-col-b h3 { font-size:.95rem; color:#fff; margin:.6em 0 .2em; }
+                    .rw-col-b p { margin:.3em 0; }
+                    .rw-jump { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,var(--primary,#D32F2F),#FF3B3B); color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-size:.9rem; }
+                    .rw-jump:hover { filter:brightness(1.1); }
+                    .rw-flash { animation: rwflash 1.6s ease-out; }
+                    @keyframes rwflash { 0%{ background:rgba(211,47,47,0.25); box-shadow:0 0 0 6px rgba(211,47,47,0.18);} 100%{ background:transparent; box-shadow:0 0 0 6px transparent;} }
+                </style>
+
+                <!-- REGELWERK ÄNDERUNGEN -->
+                <div class="tab-content" id="aenderungen">
+                    <div class="section-header">
+                        <h2 class="section-title">REGELWERK <span>ÄNDERUNGEN</span></h2>
+                    </div>
+                    <p class="rule-text" style="color:var(--text-dark);margin-bottom:18px;">Alle Anpassungen am Regelwerk — Vorher/Nachher im Vergleich. Klick auf „Zur Regel" springt direkt zur betroffenen Stelle.</p>
+                    <div id="rw-changes">
+                        <p class="rule-text" style="text-align:center;padding:40px;color:var(--text-dark);">Lade Änderungen…</p>
+                    </div>
+                </div>
+
+                <!-- TEBEX -->
+                <div class="tab-content" id="tebex">
+                    <div class="section-header">
+                        <h2 class="section-title">SERVER <span>SHOP</span></h2>
+                    </div>
+
+                    <div class="tebex-hero">
+                        <div class="tebex-icon"><i class="fas fa-shopping-bag"></i></div>
+                        <h3 class="tebex-title">SHOP</h3>
+                        <p class="tebex-description">Unterstutze den Server und erhalte exklusive Items, Fahrzeuge und Vorteile.</p>
+                        <a href="https://silencelife-webshop.tebex.io/" target="_blank" class="btn-primary">
+                            <i class="fas fa-external-link-alt"></i> ZUM SHOP
+                        </a>
+                    </div>
+
+                    <div class="tebex-features">
+                        <div class="tebex-feature">
+                            <i class="fas fa-lock"></i>
+                            <h4>SICHERE ZAHLUNG</h4>
+                            <p>Uber Tebex abgewickelt</p>
+                        </div>
+                        <div class="tebex-feature">
+                            <i class="fas fa-bolt"></i>
+                            <h4>SOFORT LIEFERUNG</h4>
+                            <p>Automatische Gutschrift</p>
+                        </div>
+                        <div class="tebex-feature">
+                            <i class="fas fa-headset"></i>
+                            <h4>SUPPORT</h4>
+                            <p>Bei Problemen helfen wir</p>
+                        </div>
+                        <div class="tebex-feature">
+                            <i class="fas fa-gem"></i>
+                            <h4>EXKLUSIV</h4>
+                            <p>Einzigartige Items</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DISCORD -->
+                <div class="tab-content" id="discord">
+                    <div class="section-header">
+                        <h2 class="section-title">DISCORD <span>SERVER</span></h2>
+                    </div>
+
+                    <div class="discord-grid">
+                        <div class="discord-card main-server">
+                            <div class="discord-header">
+                                <div class="discord-avatar"><i class="fas fa-home"></i></div>
+                                <div class="discord-info">
+                                    <h4>BLOODLINE</h4>
+                                    <span>Offizieller Discord</span>
+                                </div>
+                            </div>
+                            <p class="discord-description">Der zentrale Treffpunkt. Support, Events und Community.</p>
+                            <a href="https://discord.gg/bloodlineroleplay" target="_blank" class="discord-btn">
+                                <i class="fab fa-discord"></i> BEITRETEN
+                            </a>
+                        </div>
+
+                        <div class="discord-card">
+                            <div class="discord-header">
+                                <div class="discord-avatar"><i class="fas fa-shield-halved"></i></div>
+                                <div class="discord-info">
+                                    <h4>LSPD</h4>
+                                    <span>Police Department</span>
+                                </div>
+                            </div>
+                            <p class="discord-description">Bewerbungen und interne Kommunikation der Polizei.</p>
+                            <a href="https://discord.gg/n6jWfYfCAU" target="_blank" class="discord-btn">
+                                <i class="fab fa-discord"></i> BEITRETEN
+                            </a>
+                        </div>
+
+                        <div class="discord-card">
+                            <div class="discord-header">
+                                <div class="discord-avatar"><i class="fas fa-truck-medical"></i></div>
+                                <div class="discord-info">
+                                    <h4>LSMD</h4>
+                                    <span>Medical Department</span>
+                                </div>
+                            </div>
+                            <p class="discord-description">Bewerbungen und Einsatzkoordination.</p>
+                            <a href="https://discord.gg/JUvX9ZsA9R" target="_blank" class="discord-btn">
+                                <i class="fab fa-discord"></i> BEITRETEN
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-inner">
+                <p class="footer-text">&copy; 2024 <a href="#">Bloodline RP</a> - FiveM Roleplay Server</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- DOMPurify: bereinigt Regelwerk-HTML (regelwerk.bloodline.cc) vor dem Einfügen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        function toggleNav() {
+            document.getElementById('navDropdown').classList.toggle('open');
+        }
+
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('navDropdown');
+            if (!dropdown.contains(e.target)) dropdown.classList.remove('open');
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+
+            // Reset all sub-tabs to first tab when switching main tabs
+            document.querySelectorAll('.sub-tabs').forEach(tabContainer => {
+                const subTabs = tabContainer.querySelectorAll('.sub-tab');
+                const parentContent = tabContainer.parentElement;
+                const subContents = parentContent.querySelectorAll('.sub-content');
+
+                subTabs.forEach((t, i) => {
+                    t.classList.toggle('active', i === 0);
+                });
+                subContents.forEach((c, i) => {
+                    c.classList.toggle('active', i === 0);
+                });
+            });
+
+            // Reset Gesetzbuch selected items and calculator
+            document.querySelectorAll('.gesetz-item.selected').forEach(item => {
+                item.classList.remove('selected');
+            });
+            if (typeof clearRechner === 'function') {
+                clearRechner();
+            }
+
+            document.querySelector('.content-area').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const tabId = item.getAttribute('data-tab');
+                document.getElementById('navDropdown').classList.remove('open');
+                // Gesetzbuch ist ausgelagert -> direkt zur DOJ-Seite
+                if (tabId === 'gesetzbuch') {
+                    window.open('https://gesetz.bloodline.cc', '_blank', 'noopener');
+                    return;
+                }
+                // Regelwerk-Änderungen lazy laden
+                if (tabId === 'aenderungen') {
+                    loadRegelwerkChanges();
+                }
+                switchTab(tabId);
+            });
+        });
+
+        document.querySelectorAll('.sub-tabs').forEach(tabContainer => {
+            const subTabs = tabContainer.querySelectorAll('.sub-tab');
+            const parentContent = tabContainer.parentElement;
+            const subContents = parentContent.querySelectorAll('.sub-content');
+
+            subTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const subtabId = tab.getAttribute('data-subtab');
+                    subTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    subContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(subtabId).classList.add('active');
+                });
+            });
+        });
+
+        // ===== BUSSRECHNER =====
+        let selectedItems = [];
+
+        function filterGesetze() {
+            const query = document.getElementById('gesetz-search').value.toLowerCase();
+            const resultsDiv = document.getElementById('rechner-results');
+            resultsDiv.innerHTML = '';
+
+            if (query.length < 2) return;
+
+            const allItems = document.querySelectorAll('.gesetz-item');
+            let matches = [];
+
+            allItems.forEach(item => {
+                const para = item.querySelector('.gesetz-para').textContent.toLowerCase();
+                const titel = item.querySelector('.gesetz-titel').textContent.toLowerCase();
+                if (para.includes(query) || titel.includes(query)) {
+                    matches.push(item);
+                }
+            });
+
+            matches.slice(0, 10).forEach(item => {
+                const para = item.querySelector('.gesetz-para').textContent;
+                const titel = item.querySelector('.gesetz-titel').textContent;
+                const geld = item.dataset.geld;
+                const he = item.dataset.he;
+
+                const resultItem = document.createElement('div');
+                resultItem.className = 'rechner-result-item';
+                resultItem.innerHTML = `
+                    <div><span style="color:var(--primary-light);font-weight:600;">${para}</span> ${titel}</div>
+                    <div style="display:flex;gap:15px;"><span style="color:#4CAF50;">$${parseInt(geld).toLocaleString()}</span><span style="color:#FF9800;">${he} HE</span></div>
+                `;
+                resultItem.onclick = () => addToRechner(para, titel, parseInt(geld), parseInt(he));
+                resultsDiv.appendChild(resultItem);
+            });
+        }
+
+        function addToRechner(para, titel, geld, he) {
+            selectedItems.push({ para, titel, geld, he });
+            updateRechnerSumme();
+            document.getElementById('gesetz-search').value = '';
+            document.getElementById('rechner-results').innerHTML = '';
+        }
+
+        function updateRechnerSumme() {
+            const summeDiv = document.getElementById('rechner-summe');
+            if (!summeDiv) return;
+            const totalGeld = selectedItems.reduce((sum, i) => sum + i.geld, 0);
+            const totalHe = selectedItems.reduce((sum, i) => sum + i.he, 0);
+
+            if (selectedItems.length > 0) {
+                summeDiv.style.display = 'block';
+                document.getElementById('total-geld').textContent = '$' + totalGeld.toLocaleString();
+                document.getElementById('total-he').textContent = totalHe + ' HE';
+            } else {
+                summeDiv.style.display = 'none';
+            }
+        }
+
+        function clearRechner() {
+            selectedItems = [];
+            updateRechnerSumme();
+            // Suchfeld und Ergebnisse leeren
+            const searchInput = document.getElementById('gesetz-search');
+            const resultsDiv = document.getElementById('rechner-results');
+            if (searchInput) searchInput.value = '';
+            if (resultsDiv) resultsDiv.innerHTML = '';
+            // Alle ausgewählten Gesetze zurücksetzen
+            document.querySelectorAll('.gesetz-item.selected').forEach(item => {
+                item.classList.remove('selected');
+            });
+        }
+
+        // Gesetz-Items clickbar machen
+        document.querySelectorAll('.gesetz-item').forEach(item => {
+            item.onclick = () => {
+                const para = item.querySelector('.gesetz-para').textContent;
+                const titel = item.querySelector('.gesetz-titel').textContent;
+                const geld = parseInt(item.dataset.geld) || 0;
+                const he = parseInt(item.dataset.he) || 0;
+
+                item.classList.toggle('selected');
+
+                const existingIndex = selectedItems.findIndex(i => i.para === para && i.titel === titel);
+                if (existingIndex > -1) {
+                    selectedItems.splice(existingIndex, 1);
+                } else {
+                    selectedItems.push({ para, titel, geld, he });
+                }
+                updateRechnerSumme();
+            };
+        });
+
+        // ===== REGELWERK ÄNDERUNGEN (aus regelwerk.bloodline.cc) =====
+        const RW_API = 'https://regelwerk.bloodline.cc/api/laws';
+        let rwChangesLoaded = false;
+        function rwEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        // Fremd-HTML nur bereinigt einfügen; ohne DOMPurify als reiner Text
+        function rwSafeHtml(s){ return (window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') ? window.DOMPurify.sanitize(String(s==null?'':s)) : rwEsc(s); }
+        function rwCatToTab(c){
+            c = (c||'').toLowerCase();
+            if (c.indexOf('allgemein') > -1) return 'allgemeine-regeln';
+            if (c.indexOf('roleplay') > -1) return 'roleplay-regeln';
+            if (c.indexOf('fraktion') > -1) return 'fraktionsregelwerk';
+            return 'allgemeine-regeln';
+        }
+        async function loadRegelwerkChanges(){
+            if (rwChangesLoaded) return;
+            rwChangesLoaded = true;
+            const box = document.getElementById('rw-changes');
+            try {
+                const res = await fetch(RW_API, { cache: 'no-store' });
+                const data = await res.json();
+                const changed = (data.laws || []).filter(l => l.prevHtml && l.prevHtml !== l.html);
+                changed.sort((a,b) => (b.updatedAt||0) - (a.updatedAt||0));
+                if (!changed.length) {
+                    box.innerHTML = '<p class="rule-text" style="text-align:center;padding:40px;color:var(--text-dark);">Aktuell sind keine Änderungen am Regelwerk dokumentiert.</p>';
+                    return;
+                }
+                box.innerHTML = changed.map(l => {
+                    const d = l.updatedAt ? new Date(l.updatedAt).toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'}) : '';
+                    const tab = rwCatToTab(l.category);
+                    return '<div class="rule-item rw-change">'
+                        + '<div class="rule-header"><span class="rule-number">'+rwEsc(l.category)+'</span><span class="rule-title">'+rwEsc(l.title)+'</span></div>'
+                        + '<div class="rw-meta">Geändert am '+rwEsc(d)+'</div>'
+                        + '<div class="rw-diff">'
+                        +   '<div class="rw-col"><div class="rw-col-h rw-old">Vorher</div><div class="rw-col-b">'+rwSafeHtml(l.prevHtml)+'</div></div>'
+                        +   '<div class="rw-col"><div class="rw-col-h rw-new">Nachher</div><div class="rw-col-b">'+rwSafeHtml(l.html)+'</div></div>'
+                        + '</div>'
+                        + '<button class="rw-jump" data-tab="'+tab+'" data-title="'+rwEsc(l.title)+'">Zur Regel →</button>'
+                        + '</div>';
+                }).join('');
+                box.querySelectorAll('.rw-jump').forEach(btn => btn.addEventListener('click', () => jumpToRegel(btn.dataset.tab, btn.dataset.title)));
+            } catch(e){
+                rwChangesLoaded = false;
+                box.innerHTML = '<p class="rule-text" style="text-align:center;padding:40px;color:var(--text-dark);">Änderungen konnten nicht geladen werden.</p>';
+            }
+        }
+        function rwActivateSub(tab, subContent){
+            const cont = document.getElementById(tab);
+            if (!cont || !subContent) return;
+            cont.querySelectorAll('.sub-content').forEach(c => c.classList.toggle('active', c === subContent));
+            cont.querySelectorAll('.sub-tab').forEach(b => b.classList.toggle('active', b.getAttribute('data-subtab') === subContent.id));
+        }
+        function jumpToRegel(tab, title){
+            switchTab(tab);
+            setTimeout(() => {
+                const t = (title||'').toLowerCase();
+                const cont = document.getElementById(tab);
+                if (!cont) return;
+                const headers = Array.prototype.slice.call(cont.querySelectorAll('.rule-category-header span, .rule-title'));
+                let el = headers.find(h => { const x = h.textContent.toLowerCase().trim(); return x && (x.indexOf(t) > -1 || t.indexOf(x) > -1); });
+                if (el) {
+                    const sc = el.closest('.sub-content');
+                    if (sc) rwActivateSub(tab, sc);
+                    el.scrollIntoView({ behavior:'smooth', block:'center' });
+                    const item = el.closest('.rule-item') || el.closest('.rule-category-header') || el;
+                    item.classList.add('rw-flash');
+                    setTimeout(() => item.classList.remove('rw-flash'), 1700);
+                } else {
+                    document.querySelector('.content-area')?.scrollTo({ top:0, behavior:'smooth' });
+                }
+            }, 180);
+        }
+
+    </script>
+
+    <!-- Website Data - Laedt Daten aus dem Admin Panel -->
+    <script src="js/website-data.js"></script>
+</body>
+</html>

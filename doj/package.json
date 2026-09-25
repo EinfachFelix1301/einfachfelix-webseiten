@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create bloodline-doj",
+    "db:migrate": "wrangler d1 migrations apply bloodline-doj --remote",
+    "db:migrate:local": "wrangler d1 migrations apply bloodline-doj --local"
+  },
+  "devDependencies": {
+    "wrangler": "^4.87.0"
+  }
+}

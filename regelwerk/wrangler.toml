@@ -1,0 +1,35 @@
+name = "bloodline-regelwerk"
+main = "src/worker.js"
+compatibility_date = "2025-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Static assets (HTML/CSS/JS/images)
+[assets]
+directory = "./public"
+binding = "ASSETS"
+not_found_handling = "none"
+html_handling = "none"
+run_worker_first = true
+
+# D1 database (rules, users, sessions, proposals)
+[[d1_databases]]
+binding = "DB"
+database_name = "bloodline-regelwerk"
+database_id = "REPLACE_WITH_D1_ID"
+migrations_dir = "migrations"
+
+# Admin/Editor-Portal (Login, Editor, Vorschläge) — wrangler auto-creates DNS
+# Public-Lesen der Regeln passiert auf example.com; regelwerk.example.com ist das Team-Tool.
+[[routes]]
+pattern = "regelwerk.example.com"
+custom_domain = true
+
+[vars]
+PUBLIC_HOST = "regelwerk-public.example.com"
+ADMIN_HOST = "regelwerk.example.com"
+# Discord OAuth (Button-Login). Secret = wrangler secret DISCORD_CLIENT_SECRET.
+DISCORD_GUILD_ID = "DEINE_ID"
+DISCORD_ROLE_ID = "DEINE_ID"
+DISCORD_CLIENT_ID = "DEINE_ID"
+# Redirect läuft über die bereits in Discord registrierte URI (Transcript-callback leitet rw_-States weiter)
+DISCORD_REDIRECT_URI = "https://example.com/transcript/callback.php"
